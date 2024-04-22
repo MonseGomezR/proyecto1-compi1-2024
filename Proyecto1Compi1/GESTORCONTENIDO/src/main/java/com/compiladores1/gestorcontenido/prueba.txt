@@ -1,0 +1,32 @@
+<acciones>
+    <accion nombre="NUEVA_PAGINA">
+        <parametros>
+            <parametro nombre="ID">
+                [pagina1]
+            </parametro>
+            <parametro nombre="TITULO">
+                [Título de la página]
+            </parametro>
+            <parametro nombre="SITIO">
+                [sitio1]
+            </parametro>
+            <parametro nombre="USUARIO_CREACION">
+                [usuario123]
+            </parametro>
+            <parametro nombre="FECHA_CREACION">
+                [2024-04-18]
+            </parametro>
+            <parametro nombre="FECHA_MODIFICACION">
+                [2024-04-18]
+            </parametro>
+            <parametro nombre="USUARIO_MODIFICACION">
+                [usuario456]
+            </parametro>
+        </parametros>
+        <etiquetas>
+            <etiqueta valor="etiqueta1"/>
+            <etiqueta valor="etiqueta2"/>
+        </etiquetas>
+    </accion>
+</acciones>
+

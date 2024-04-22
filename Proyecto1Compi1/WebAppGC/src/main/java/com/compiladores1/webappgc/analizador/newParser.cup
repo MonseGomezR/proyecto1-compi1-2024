@@ -1,0 +1,103 @@
+package com.compiladores1.webbappgc.analizador;
+import java.util.LinkedList;
+import java_cup.runtime.*;
+
+parser code {:
+    /**
+     * Variable en la que se almacena el arbol de sintaxis abstracta que se 
+     * genera luego del analisis sintáctico.
+     */
+    public LinkedList<Instruccion> AST;
+
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+     **/ 
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+
+    /**
+     * Método al que se llama automáticamente ante algún error sintáctico 
+     * en el que ya no es posible una recuperación de errores.
+     **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }
+    /**
+     * Método que devuelve el AST que se generó después de realizar el análisis sintáctico. 
+     * @return árbol de sintaxis abstacta que será utilizado posteriormente en la ejecución.
+     */
+    public LinkedList<Instruccion> getAST() {
+        return AST;
+    }
+:}
+
+terminal String    ACCIONES_OPEN, ACCIONES_CLOSE, ACCION_OPEN, ACCION_CLOSE, SALTOLINEA, FECHA,
+                            PARAMETROS_OPEN, PARAMETROS_CLOSE, PARAMETRO_OPEN, PARAMETRO_CLOSE,
+                            ETIQUETAS_OPEN, ETIQUETAS_CLOSE, ETIQUETA_OPEN, ETIQUETA_CLOSE, VALOR_OPEN,
+                            NOMBRE_OPEN, XML_TAG_CLOSE, GT, ID, ESPACIO, ACCION_NP, ACCION_DP, ACCION_MP,
+                            PR_ID, VALOR_PARAMETRO, L_LLAVE, R_LLAVE, VALOR;
+terminal Integer  ENTERO;
+
+non terminal Object     acciones, acciones_body, accion, tipo_accion, accion_np, accion_bp, accion_mp, parametros, parametros_body,
+                                    tipo_parametro, parametro_id, parametro, etiquetas, etiquetas_body, etiqueta, etiqueta_body, parametro_otro;
+non terminal LinkedList<Instruccion> instrucciones;
+
+start with acciones;
+
+acciones ::=    ACCIONES_OPEN  acciones_body ACCIONES_CLOSE {: System.out.println("Entrando a Acciones"); :} 
+;
+
+acciones_body ::=   acciones_body accion 
+                                | accion   {: System.out.println("Entrando a acciones_body"); :} 
+;
+
+accion ::=  ACCION_OPEN  NOMBRE_OPEN tipo_accion ACCION_CLOSE {: System.out.println("Entrando a accion"); :} 
+;
+
+tipo_accion ::= ACCION_NP GT  accion_np        {: System.out.println("tipo_accion_np"); :} 
+                      | ACCION_DP  GT  accion_bp   {: System.out.println("tipo_accion_bp"); :} 
+                      | ACCION_MP GT accion_mp     {: System.out.println("tipo_accion_mp"); :}
+;
+
+accion_np ::=   parametros     {: System.out.println("accion nueva pagina"); :}
+;
+
+accion_bp ::=   parametro_id     {: System.out.println("accion borrar pagina"); :}
+;
+
+accion_mp ::=   parametros      {: System.out.println("accion modificar pagina"); :}
+;
+
+parametros ::= PARAMETROS_OPEN  parametros_body PARAMETROS_CLOSE etiquetas  {: System.out.println("entrando en parametros"); :}
+;
+
+parametros_body ::=   parametros_body tipo_parametro     {: System.out.println("parametro recursivo"); :}
+                                 | tipo_parametro     {: System.out.println("tipos parametros"); :}
+;
+
+tipo_parametro ::= parametro_id     {: System.out.println("parametro id"); :}
+                          | parametro_otro  {: System.out.println("parametro otro"); :}
+;
+
+parametro_id ::= PARAMETRO_OPEN  NOMBRE_OPEN PR_ID GT  
+                                    L_LLAVE ID R_LLAVE  
+                                    PARAMETRO_CLOSE    {: System.out.println("parametro"); :}
+;
+
+parametro_otro ::= PARAMETRO_OPEN NOMBRE_OPEN VALOR GT
+                                    L_LLAVE ID R_LLAVE
+                                    PARAMETRO_CLOSE     {: System.out.println("parametro otro"); :}
+;
+
+etiquetas ::= ETIQUETAS_OPEN etiquetas_body ETIQUETAS_CLOSE     {: System.out.println("etiqueta"); :}
+;
+
+etiquetas_body ::=   etiqueta
+;
+
+etiqueta ::= ETIQUETA_OPEN VALOR_OPEN VALOR XML_TAG_CLOSE
+;
